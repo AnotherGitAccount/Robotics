@@ -1,5 +1,9 @@
 # Robotics
 
+![alt text][logo]
+
+[logo]: https://cdn.discordapp.com/attachments/512671211998937088/688068594739052599/Capture_decran_du_2020-03-13_17-57-08.png "schema"
+
 ## Machine d’état
 
 ### Find obstacle :
