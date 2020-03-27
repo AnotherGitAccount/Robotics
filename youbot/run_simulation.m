@@ -1,5 +1,9 @@
 function run_simulation()
-    close all;
+    close all; clc;
+    
+ %% Figures 
+    nav = figure;
+ 
  %% Initiate the connection to the simulator. 
     
     disp('Program started');
@@ -36,6 +40,10 @@ function run_simulation()
     K = 0.3;
     % ALPHA-factor
     ALPHA = 0.9;
+    % Number of chunks per image (x axis)
+    U = 4;
+    % Number of chunks per image (y axis)
+    V = 4;
     
    %% "Global" variables
     % Finite state machine state
@@ -44,6 +52,9 @@ function run_simulation()
     step = 0;
     % Relative map - contains all in-range depth measures around the robot
     rel_map = [];
+    % u and v state variables for find_obstacles
+    u = 0;
+    v = 0;
     
     %% Start demo
     while true
@@ -87,13 +98,11 @@ function run_simulation()
                 step = step + 1;
                 if step == 5
                     step = 0;
-                    fsm(1) = 'finished';
-                    fsm(2) = 'none';
+                    fsm(1) = 'find_obstacles';
+                    fsm(2) = 'dilation';
                 else
                     % Computes the trajectory for the rotation
                     [s_theta, sp_theta, spp_theta] = make_trajectory_s(ang(3), ang(3) + pi / 2, V_ROT, K, ALPHA, 10000);
-                    figure
-                    plot(spp_theta);
                     fsm(2) = 'rotate';
                 end
             elseif strcmp(fsm(2), 'rotate')
@@ -110,9 +119,66 @@ function run_simulation()
                     st = sp_theta(index);
                 end
             end
+         elseif strcmp(fsm(1), 'find_obstacles')
+             if strcmp(fsm(2), 'dilation')
+                tmp = bwmorph(rel_map, 'dilate', 6);
+                fsm(2) = 'erosion';
+             elseif strcmp(fsm(2), 'erosion')
+                tmp = bwmorph(tmp, 'erode', 5);
+                fsm(2) = 'hough';
+             elseif strcmp(fsm(2), 'hough')
+                [H, T, R] = hough(tmp);
+                fsm(2) = 'peaks';
+             elseif strcmp(fsm(2), 'peaks')
+                P  = houghpeaks(H, 5, 'threshold', ceil(0.3 * max(H(:))));
+                fsm(2) = 'lines';
+             elseif strcmp(fsm(2), 'lines')
+                lines = houghlines(tmp, T, R, P, 'FillGap', 10, 'MinLength', 30);
+                tic
+                figure(nav);
+                toc
+                hold on
+                
+                fsm(2) = 'circles';
+             elseif strcmp(fsm(2), 'circles')
+                img_length = 2 * SENSOR_RANGE / DS;
+                u0 = max(round(u * img_length / U), 1);
+                uf = round((u + 1) * img_length / U);
+                v0 = max(round(v * img_length / V), 1);
+                vf = round((v + 1) * img_length / V);
+
+                 [centers, radii] = imfindcircles(rel_map(u0:uf, v0:vf), [25 35], 'Sensitivity', 0.95);
+
+                 if ~isempty(centers)
+                    centers = centers + [v0 u0];
+                 end
+
+                 viscircles(centers, radii);
+
+                 if u < U - 1
+                     u = u + 1;
+                 else
+                     u = 0;
+                     v = v + 1;
+                 end
+
+                 if v == V
+                     for k = 1:length(lines)
+                        xy = [lines(k).point1; lines(k).point2];
+                        plot(xy(:, 1), xy(:, 2),'LineWidth', 2, 'Color', 'green');
+
+                        % Plot beginnings and ends of lines
+                        plot(xy(1, 1), xy(1, 2), 'x', 'LineWidth', 2, 'Color', 'yellow');
+                        plot(xy(2, 1), xy(2, 2), 'x', 'LineWidth', 2, 'Color', 'red');
+                     end
+                     hold off;
+                     fsm(1) = 'finished';
+                     fsm(2) = 'none';
+                 end
+             else
+                 error('Unknown state %s.', fsm);
+             end
          elseif strcmp(fsm(1), 'finished') 
-             figure
-             imagesc(rel_map);
              break;
          else
             error('Unknown state %s.', fsm);
@@ -122,8 +188,10 @@ function run_simulation()
          
          elapsed = toc;
          timeleft = TIMESTEP - elapsed;
-         if timeleft > 0
+         if timeleft > 0      
              pause(min(timeleft, .01));
+         else
+             fprintf("Too long : %s %s -> %f\n", fsm(1), fsm(2), elapsed);
          end
     end
 
