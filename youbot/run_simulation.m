@@ -35,7 +35,7 @@ function run_simulation()
     % Depth sensor range
     SENSOR_RANGE = 5;
     % Max rotation speed
-    V_ROT = 4 * 0.08;
+    V_ROT = 4 * 0.07;
     % K-factor
     K = 0.3;
     % ALPHA-factor
@@ -91,13 +91,14 @@ function run_simulation()
                         pts(:, i) = [cos(ang(3)) -sin(ang(3)); sin(ang(3)) cos(ang(3))] * pts(:, i) + [5; 5];
                         % Adds the point in the relative map after discretizing
                         % its coordinates
-                        rel_map(round(pts(1, i) / DS), round(pts(2, i) / DS)) = true;
+                        rel_map(max(round(pts(1, i) / DS), 1), max(round(pts(2, i) / DS), 1)) = true;
                     end
                 end
                 
                 step = step + 1;
                 if step == 5
                     step = 0;
+                    save 'fog.mat' rel_map;
                     fsm(1) = 'find_obstacles';
                     fsm(2) = 'dilation';
                 else
@@ -106,10 +107,7 @@ function run_simulation()
                     fsm(2) = 'rotate';
                 end
             elseif strcmp(fsm(2), 'rotate')
-                % Computes the index of the current angle in the array,
-                % uses some funcky distance measure but it works!
-                % dist(a, b) = min { |a - b|, 2pi - |a - b| }
-                [~, index] = min(min(abs(ang(3) - s_theta), 2 * pi - abs(ang(3) - s_theta)));
+                [~, index] = min(adist(ang(3), s_theta));
                 if index == 10000
                     st = 0;
                     fsm(2) = 'read_depth';
@@ -134,11 +132,8 @@ function run_simulation()
                 fsm(2) = 'lines';
              elseif strcmp(fsm(2), 'lines')
                 lines = houghlines(tmp, T, R, P, 'FillGap', 10, 'MinLength', 30);
-                tic
                 figure(nav);
-                toc
                 hold on
-                
                 fsm(2) = 'circles';
              elseif strcmp(fsm(2), 'circles')
                 img_length = 2 * SENSOR_RANGE / DS;
@@ -191,7 +186,7 @@ function run_simulation()
          if timeleft > 0      
              pause(min(timeleft, .01));
          else
-             fprintf("Too long : %s %s -> %f\n", fsm(1), fsm(2), elapsed);
+             fprintf("Too long before : %s %s -> %f\n", fsm(1), fsm(2), elapsed);
          end
     end
 
