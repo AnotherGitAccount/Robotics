@@ -14,40 +14,33 @@ L'ensemble des décisions prises par le robot se font par rapport au carré sur 
 
 ### Zigzag
 
-![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693903104042729502/zigzag1.png "zigzag")
+![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693909204897103932/zigzag2.png "zigzag")
 
 1. Front capture
 
    Le robot utilise son capteur de distance pour prendre une capture face à lui. Le but est de capturer le nombre de
    collisions dans le carré devant lui, celui devant à gauche et celui devant à droite. A partir d'un threshold, on décide  
-   s'il y a ou non un obstacle dans ces trois carrés (le threshold permet d'éviter le bruit). Les autres carrés sont
-   récupérés dans la structure contenant l'ensemble des carrés. L'ensemble des points capturés étant des collisions sont 
-   ajoutés dans une liste de points.
+   s'il y a ou non un obstacle dans ces trois carrés (le threshold permet d'éviter le bruit). L'ensemble des points capturés 
+   étant des collisions sont ajoutés dans une liste de points.
 
    Un carré supplémentaire en face du robot est capturé, il servira à la navigation.
+   
+   L'ensemble des carrés est ajouté à la structure des carrés s'ils n'y sont pas déjà.
 
-2. Capture 360
-
-   Le robot utilise son capteur de distance pour prendre une capture autour de lui. De ces points, il va capturer le nombre 
-   de collisions sur son carré et l'ensemble des 8 carrés connexes. A partir d'un threshold, on décide s'il y a ou non un 
-   obstacle dans ces trois carrés (le threshold permet d'éviter le bruit). L'ensemble des points capturés étant des 
-   collisions sont ajoutés dans une liste de poins.
-
-   Un carré supplémentaire en face du robot est capturé, il servira à la navigation.
-
-3. Control, trois sous étapes
-
-   Les carrés à dispositions sont ceux en vert sur cette image. La direction du robot est donnée par la flèche.
+2. Control, trois sous étapes
 
    ![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693901539290513454/dir.png "zigzag_carrés")
 
-   a. A partir des 9 carrés et de s'ils sont des obstacles ou non on va décider de si oui on non le carré de gauche (resp. de droite) devient un checkpoint fort, un checkpoint faible ou rien. Cela servira dans l'autre machine d'état. Le niveau du checkpoint est lié au carré et on l'ajoute également dans une liste.
+   a. Trajectory planning
+      Si le robot est capable de récupérer les 10 carrés dont il a besoin, il décide d'une nouvelle trajectoire et analyse 
+      les différents carrés. Sinon il évalue juste une trajectoire en rotation de 90°
 
-   ![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693898109591486495/Capture_decran_du_2020-03-29_21-01-14.png "zigzag_decision")
+   b. Analyze
+      A partir des 8 carrés connexes et de s'ils sont des obstacles ou non on va décider de si oui on non le carré de gauche 
+      (resp. de droite) devient un checkpoint fort, un checkpoint faible ou rien. Cela servira dans l'autre machine d'état. 
+      Le niveau du checkpoint est lié au carré et on l'ajoute également dans une liste.
 
-   b. Si le carré sur lequel on se trouve était un checkpoint, il est retiré de la liste et le carré devient de type "pas checkpoint".
-
-   c. A partir des carrés, le robot va définir une trajectoire ou passer à la machine d'états "travel" s'il ne peut plus bouger en zig-zag.
+      ![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693898109591486495/Capture_decran_du_2020-03-29_21-01-14.png "zigzag_decision")
 
 4. Move
 
