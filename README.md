@@ -10,11 +10,14 @@ L'environnement est découpé en carrés de largeur L. Plus la longueur L est pr
 
 L'ensemble des décisions prises par le robot se font par rapport au carré sur lequel il se trouve, les 8 carrés connexes à celui du centre et un carré supplémentaire face au robot. A chaque instant, le robot n'a donc besoin de connaître l'état que de ces 10 carrés (obstacle / pas obstacle).
 
+![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693901539290513454/dir.png "zigzag_carrés")
+La flèche représente l'orientation du robot.
+
 ## Machines d'états
 
 ### Zigzag
 
-![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693909204897103932/zigzag2.png "zigzag")
+![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693910118802260039/Untitled_Diagram.png "zigzag")
 
 1. Front capture
 
@@ -27,18 +30,15 @@ L'ensemble des décisions prises par le robot se font par rapport au carré sur 
    
    L'ensemble des carrés est ajouté à la structure des carrés s'ils n'y sont pas déjà.
 
-2. Control, trois sous étapes
+2. Trajectory planning
 
-   ![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693901539290513454/dir.png "zigzag_carrés")
+   Si le robot est capable de récupérer les 10 carrés dont il a besoin, il décide d'une nouvelle trajectoire et analyse 
+   les différents carrés. Sinon il évalue juste une trajectoire en rotation de 90°
 
-   a. Trajectory planning
-      Si le robot est capable de récupérer les 10 carrés dont il a besoin, il décide d'une nouvelle trajectoire et analyse 
-      les différents carrés. Sinon il évalue juste une trajectoire en rotation de 90°
-
-   b. Analyze
-      A partir des 8 carrés connexes et de s'ils sont des obstacles ou non on va décider de si oui on non le carré de gauche 
-      (resp. de droite) devient un checkpoint fort, un checkpoint faible ou rien. Cela servira dans l'autre machine d'état. 
-      Le niveau du checkpoint est lié au carré et on l'ajoute également dans une liste.
+3. Analyze
+   A partir des 8 carrés connexes et de s'ils sont des obstacles ou non on va décider de si oui on non le carré de gauche 
+   (resp. de droite) devient un checkpoint fort, un checkpoint faible ou rien. Cela servira dans l'autre machine d'état. 
+   Le niveau du checkpoint est lié au carré et on l'ajoute également dans une liste.
 
       ![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693898109591486495/Capture_decran_du_2020-03-29_21-01-14.png "zigzag_decision")
 
