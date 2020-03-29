@@ -8,7 +8,7 @@
 
 L'environnement est découpé en carrés de largeur L. Plus la longueur L est proche de celle du robot et plus la méthode sera précise. Au contraire, un grand L rendra l'exploration plus rapide. Le robot ne peut se déplacer que du centre d'un carré vers le centre d'un autre carré. 
 
-L'ensemble des décisions prises par le robot se font par rapport au carré sur lequel il se trouve et les 8 carrés connexes à celui du centre. A chaque instant, le robot n'a donc besoin de connaître l'état que de ces 9 carrés (obstacle / pas obstacle).
+L'ensemble des décisions prises par le robot se font par rapport au carré sur lequel il se trouve, les 8 carrés connexes à celui du centre et un carré supplémentaire face au robot. A chaque instant, le robot n'a donc besoin de connaître l'état que de ces 10 carrés (obstacle / pas obstacle).
 
 ## Machines d'états
 
