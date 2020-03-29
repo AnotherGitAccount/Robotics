@@ -39,15 +39,15 @@ L'ensemble des décisions prises par le robot se font par rapport au carré sur 
 
    Les carrés à dispositions sont ceux en vert sur cette image. La direction du robot est donnée par la flèche.
 
-![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693901539290513454/dir.png "zigzag_carrés")
+   ![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693901539290513454/dir.png "zigzag_carrés")
 
-  a. A partir des 9 carrés et de s'ils sont des obstacles ou non on va décider de si oui on non le carré de gauche (resp. de droite) devient un checkpoint fort, un checkpoint faible ou rien. Cela servira dans l'autre machine d'état. Le niveau du checkpoint est lié au carré et on l'ajoute également dans une liste.
+   a. A partir des 9 carrés et de s'ils sont des obstacles ou non on va décider de si oui on non le carré de gauche (resp. de droite) devient un checkpoint fort, un checkpoint faible ou rien. Cela servira dans l'autre machine d'état. Le niveau du checkpoint est lié au carré et on l'ajoute également dans une liste.
 
-![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693898109591486495/Capture_decran_du_2020-03-29_21-01-14.png "zigzag_decision")
+   ![alt text](https://cdn.discordapp.com/attachments/512671211998937088/693898109591486495/Capture_decran_du_2020-03-29_21-01-14.png "zigzag_decision")
 
-  b. Si le carré sur lequel on se trouve était un checkpoint, il est retiré de la liste et le carré devient de type "pas checkpoint".
+   b. Si le carré sur lequel on se trouve était un checkpoint, il est retiré de la liste et le carré devient de type "pas checkpoint".
 
-  c. A partir des carrés, le robot va définir une trajectoire ou passer à la machine d'états "travel" s'il ne peut plus bouger en zig-zag.
+   c. A partir des carrés, le robot va définir une trajectoire ou passer à la machine d'états "travel" s'il ne peut plus bouger en zig-zag.
 
 4. Move
 
