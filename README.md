@@ -22,9 +22,9 @@ La flèche représente l'orientation du robot.
 1. Front capture
 
    Le robot utilise son capteur de distance pour prendre une capture face à lui. Le but est de capturer le nombre de
-   collisions dans le carré devant lui, celui devant à gauche et celui devant à droite. A partir d'un threshold, on décide  
-   s'il y a ou non un obstacle dans ces trois carrés (le threshold permet d'éviter le bruit). L'ensemble des points capturés 
-   étant des collisions sont ajoutés dans une liste de points.
+   collisions dans les deux carrés devant lui, celui devant à gauche et celui devant à droite. A partir d'un threshold, on 
+   décide s'il y a ou non un obstacle dans ces trois carrés (le threshold permet d'éviter le bruit). L'ensemble des points 
+   capturés étant des collisions sont ajoutés dans une liste de points.
 
    Un carré supplémentaire en face du robot est capturé, il servira à la navigation.
    
